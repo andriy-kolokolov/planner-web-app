@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss';
-import colors from 'tailwindcss/colors';
 
 export default <Partial<Config>>{
+  darkMode: 'class',
   theme: {
     extend: {
       aspectRatio: {
@@ -10,11 +10,35 @@ export default <Partial<Config>>{
         video: '16 / 9',
       },
       colors: {
-        base: '#ffffff',
-        brand: '#164387',
-        'brand-accent': '#00B7FF',
-        'brand-primary': '#181833',
-        'brand-secondary': '#5C5C71',
+        'brand-primary': {
+          50: '#eef8ff',
+          100: '#d9efff',
+          200: '#bbe4ff',
+          300: '#8dd5ff',
+          400: '#57bbff',
+          500: '#309cff',
+          600: '#197ef7',
+          700: '#1266e3',
+          800: '#1552b8',
+          900: '#164387',
+          950: '#132d58',
+          DEFAULT: '#309cff',
+        },
+        'brand-secondary': {
+          50: '#f7f7f8',
+          100: '#eeedf1',
+          200: '#d8d8df',
+          300: '#b6b6c3',
+          400: '#8e8fa2',
+          500: '#707187',
+          600: '#5c5c71',
+          700: '#4b4a5a',
+          800: '#3f3f4d',
+          900: '#393842',
+          950: '#26252c',
+          DEFAULT: '#707187',
+        },
+        'brand-accent': '#00b7ff',
         'brand-gray-100': '#a4a6aa',
         'brand-gray-200': '#DEE1E8',
         'brand-gray-300': '#F5F8FA',

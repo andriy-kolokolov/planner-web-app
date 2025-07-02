@@ -1,6 +1,7 @@
 <template>
   <div class="flex h-screen">
     <Sidebar />
+    <AppHeader />
     <div class="flex-1 overflow-auto">
       <header>This is an authenticated layout user</header>
       <p>Some default layout content shared across all auth user pages</p>
