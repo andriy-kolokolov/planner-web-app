@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen">
-    <Sidebar />
+    <AppSidebar />
     <AppHeader />
     <div class="flex-1 overflow-auto">
-      <header>This is an authenticated layout user</header>
+      <header>Authenticated layout - {{ useRoute().path }} page</header>
       <p>Some default layout content shared across all auth user pages</p>
       <slot />
     </div>

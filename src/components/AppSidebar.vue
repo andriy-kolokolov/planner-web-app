@@ -17,12 +17,11 @@
       <!--    bottom sidebar     -->
       <ul>
         <li v-for="item in lowerNavItems" :key="item.path.toString()">
-          {{ item.color }}
           <NuxtLink
             :to="item.path"
             :class="item.color ? item.color : ''"
             class="flex items-center px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-            exact-active-class="bg-gray-300 dark:bg-gray-900"
+            exact-active-class="bg-primary-300 dark:bg-primary-900"
           >
             <UIcon v-if="item.icon" :name="item.icon" class="w-5 h-5 mr-3" />
             <span>{{ item.label }}</span>

@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen">
-    <Sidebar />
+    <AppSidebar />
     <div class="flex-1 overflow-auto">
       <AppHeader />
-      <p>Guest layout</p>
+      <p>Guest layout - {{ useRoute().path }} page</p>
       <slot />
     </div>
   </div>
