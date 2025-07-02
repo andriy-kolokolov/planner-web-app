@@ -1,5 +1,5 @@
-import type { Config } from 'tailwindcss'
-import colors from "tailwindcss/colors";
+import type { Config } from 'tailwindcss';
+import colors from 'tailwindcss/colors';
 
 export default <Partial<Config>>{
   theme: {
@@ -7,11 +7,11 @@ export default <Partial<Config>>{
       aspectRatio: {
         auto: 'auto',
         square: '1 / 1',
-        video: '16 / 9'
+        video: '16 / 9',
       },
       colors: {
-        'base': '#ffffff',
-        'brand': '#164387',
+        base: '#ffffff',
+        brand: '#164387',
         'brand-accent': '#00B7FF',
         'brand-primary': '#181833',
         'brand-secondary': '#5C5C71',
@@ -69,7 +69,7 @@ export default <Partial<Config>>{
         // 'disabled-hour': "url('assets/images/backgrounds/disabled.png')",
         // 'extended-hour': "url('assets/images/backgrounds/extended.png')",
         // 'diagonal-stripes': 'repeating-linear-gradient(125deg, #DEE1E8 0px, #DEE1E8 1px, white 1px, white 10px)'
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};

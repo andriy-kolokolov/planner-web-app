@@ -1,23 +1,17 @@
 <template>
-  <h1>Login</h1>
+  <h1 v-if="true" class="flex p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400">Login</h1>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive } from 'vue';
 
-interface Props {
-}
+interface Props {}
 
-interface State {
-}
+interface State {}
 
-const props = withDefaults(defineProps<Props>(), {
-});
+const props = withDefaults(defineProps<Props>(), {});
 
-const state = reactive<State>({
-});
+const state = reactive<State>({});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

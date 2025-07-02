@@ -7,7 +7,6 @@
 </template>
 
 <script setup lang="ts">
-
 const authStore = useAuthStore();
 
 useHead({
@@ -16,11 +15,18 @@ useHead({
   },
   templateParams: {
     siteName: 'Planner',
-    separator: '-'
-  }
+    separator: '-',
+  },
 });
 
+watch(
+  () => authStore.isAuthenticated,
+  () => {
+    console.log('authStore.isAuthenticated changed');
+  },
+);
+
 const currentLayoutName = computed(() => {
-  return authStore.isAuthenticated ? "user" : "guest";
+  return authStore.isAuthenticated ? 'user' : 'guest';
 });
 </script>

@@ -5,13 +5,8 @@ export const useAuthStore = defineStore('auth', {
   }),
   actions: {
     // ? const { data: count } = await useFetch('/api/count')
-    async login() {
-
-    },
-    async logout() {
-
-    },
+    async login() {},
+    async logout() {},
   },
-  getters: {
-  },
-})
+  getters: {},
+});
