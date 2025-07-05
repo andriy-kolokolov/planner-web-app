@@ -1,17 +1,9 @@
-<template>
-
-</template>
+<template></template>
 
 <script setup lang="ts">
+interface Props {}
 
-interface Props {
-}
-
-interface State {
-}
-
+interface State {}
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

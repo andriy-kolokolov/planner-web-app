@@ -21,8 +21,10 @@ export default defineNuxtConfig({
     // 👇 define your public keys here so NUXT_PUBLIC_… can override them
     public: {
       appName: '', // overridden by NUXT_PUBLIC_APP_NAME
-      appHost: '', // overridden by NUXT_PUBLIC_APP_HOST
-      appPort: '', // overridden by NUXT_PUBLIC_APP_PORT
+      appHost: '',
+      appPort: '',
+      apiUrl: '',
+      apiSecretKey: '',
     },
     modules: ['@nuxtjs/robots'],
     robots: {

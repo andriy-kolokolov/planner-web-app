@@ -1,23 +1,15 @@
-<template>
-  
-</template>
+<template></template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive } from 'vue';
 
-interface Props {
-}
+interface Props {}
 
-interface State {
-}
+interface State {}
 
-const props = withDefaults(defineProps<Props>(), {
-});
+const props = withDefaults(defineProps<Props>(), {});
 
-const state = reactive<State>({
-});
+const state = reactive<State>({});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

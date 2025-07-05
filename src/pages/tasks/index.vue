@@ -1,18 +1,11 @@
-<template>
-  
-</template>
+<template></template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive } from 'vue';
 
-interface Props {
-}
+interface Props {}
 
-interface State {
-}
-
+interface State {}
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
