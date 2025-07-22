@@ -5,8 +5,7 @@ const apiClient = axios.create({
   baseURL: useRuntimeConfig().public.apiUrl,
   timeout: 2000, // Request timeout in milliseconds
   headers: {
-    'content-type': 'application/json',
-    'api-key': useRuntimeConfig().public.apiSecretKey,
+    'X-API-Secret': useRuntimeConfig().public.apiSecretKey,
   },
 });
 

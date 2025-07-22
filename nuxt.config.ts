@@ -25,6 +25,7 @@ export default defineNuxtConfig({
       appPort: '',
       apiUrl: '',
       apiSecretKey: '',
+      apiSecretHeaderName: '',
     },
     modules: ['@nuxtjs/robots'],
     robots: {
