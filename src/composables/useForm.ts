@@ -72,15 +72,7 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
       url: string,
       options: FormOptions<R> = {},
     ): Promise<AxiosResponse<R> | undefined> {
-      const {
-        resetOnSuccess = false,
-        forceUrlEncoded = false,
-        onBefore,
-        onStart,
-        onSuccess,
-        onError,
-        onFinish,
-      } = options;
+      const { resetOnSuccess = false, forceUrlEncoded = false, onBefore, onStart, onSuccess, onError, onFinish } = options;
 
       try {
         onBefore?.();
@@ -128,7 +120,6 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
 
         onSuccess?.(response);
         return response;
-
       } catch (error) {
         try {
           // Safely handle axios errors

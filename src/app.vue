@@ -16,28 +16,24 @@ const pageTitle = computed(() => {
   }
   if (route.name) {
     // e.g. ['dashboard'] or ['admin', 'settings']
-    const parts = String(route.name).split("-");
-    return parts[parts.length - 1]
-      .replace(/(^\w)/, m => m.toUpperCase());
+    const parts = String(route.name).split('-');
+    return parts[parts.length - 1].replace(/(^\w)/, (m) => m.toUpperCase());
   }
   // fallback to last path segment
   return (
     route.path
-         .split("/")
-         .pop()
-         ?.replace(/[-_]/g, " ")
-         .replace(/(^\w)/, m => m.toUpperCase()) || "Page"
+      .split('/')
+      .pop()
+      ?.replace(/[-_]/g, ' ')
+      .replace(/(^\w)/, (m) => m.toUpperCase()) || 'Page'
   );
 });
 
 useHead(() => ({
   title: pageTitle.value,
   titleTemplate: `%s - Planner`,
-  meta: [
-    { name: "description", content: "My amazing site." }
-  ],
+  meta: [{ name: 'description', content: 'My amazing site.' }],
 }));
-
 
 const currentLayoutName = computed(() => {
   return authStore.isAuthenticated ? 'user' : 'guest';
@@ -45,5 +41,5 @@ const currentLayoutName = computed(() => {
 
 onBeforeMount(() => {
   authStore.initAuth();
-})
+});
 </script>

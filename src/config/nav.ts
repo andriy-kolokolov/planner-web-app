@@ -25,5 +25,5 @@ export const upperNavItems: NavItem[] = [
 export const lowerNavItems: NavItem[] = [
   { key: 'profile', label: 'Profile', type: 'link', path: '/auth/profile', icon: 'i-mdi-account' },
   { key: 'settings', label: 'Settings', type: 'link', path: '/settings', icon: 'i-mdi-cog' },
-  { key: 'logout', label: 'Logout', type: 'link', action: () => { useAuthStore().logout() }, icon: 'i-mdi-logout', color: 'text-red-400' },
+  { key: 'logout', label: 'Logout', type: 'link', action: useAuthStore().logout, icon: 'i-mdi-logout', color: 'text-red-400' },
 ];
