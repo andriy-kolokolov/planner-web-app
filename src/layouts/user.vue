@@ -1,11 +1,17 @@
 <template>
   <div class="flex h-screen">
-    <AppSidebar />
-    <AppHeader />
-    <div class="flex-1 overflow-auto">
-      <header>Authenticated layout - {{ useRoute().path }} page</header>
-      <p>Some default layout content shared across all auth user pages</p>
-      <slot />
+    <!-- Sidebar - fixed width -->
+    <AppSidebar class="w-64 flex-shrink-0" />
+
+    <!-- Main area - header + content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Header - fixed height -->
+      <AppHeader class="h-16 flex-shrink-0" />
+
+      <!-- Scrollable content area -->
+      <main class="flex-1 overflow-auto p-6">
+        <slot />
+      </main>
     </div>
   </div>
 </template>
@@ -14,12 +20,8 @@
 import { reactive } from 'vue';
 
 interface Props {}
-
 interface State {}
 
 const props = withDefaults(defineProps<Props>(), {});
-
 const state = reactive<State>({});
 </script>
-
-<style scoped></style>

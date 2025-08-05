@@ -1,11 +1,11 @@
 <template>
-  <div class="flex h-screen">
-    <AppSidebar />
-    <div class="flex-1 overflow-auto">
-      <AppHeader />
-      <p>Guest layout - {{ useRoute().path }} page</p>
+  <div class="min-h-screen flex flex-col">
+    <!-- Fixed header height -->
+    <AppHeader class="h-[65px]" />
+    <!-- Main content area takes remaining space -->
+    <main class="flex-1 flex items-center justify-center">
       <slot />
-    </div>
+    </main>
   </div>
 </template>
 
@@ -13,12 +13,8 @@
 import { reactive } from 'vue';
 
 interface Props {}
-
 interface State {}
 
 const props = withDefaults(defineProps<Props>(), {});
-
 const state = reactive<State>({});
 </script>
-
-<style scoped></style>

@@ -1,20 +1,15 @@
 // composables/useForm.ts
-import { reactive, toRaw } from 'vue';
-import apiClient from '~/api/apiClient';
+import { reactive } from 'vue';
 import type { AxiosError, AxiosResponse } from 'axios';
 
-interface FormOptions {
+interface FormOptions<T = any> {
   resetOnSuccess?: boolean;
   forceUrlEncoded?: boolean;
   onBefore?: () => void;
   onStart?: () => void;
-  onSuccess?: (response: AxiosResponse) => void;
+  onSuccess?: (response: AxiosResponse<T>) => void;
   onError?: (errors: any) => void;
   onFinish?: () => void;
-}
-
-interface ValidationErrors {
-  [key: string]: string | string[];
 }
 
 export function useForm<T extends Record<string, any>>(initialData: T) {
@@ -27,7 +22,7 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
     ...initialData,
 
     // Form state
-    errors: {} as ValidationErrors,
+    errors: {} as Record<string, string | string[]>,
     hasErrors: false,
     processing: false,
     wasSuccessful: false,
@@ -71,21 +66,15 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
       return data;
     },
 
-    async submit(
+    // composables/useForm.ts - Updated submit method
+    async submit<R = any>(
       method: 'get' | 'post' | 'put' | 'patch' | 'delete',
       url: string,
-      options: FormOptions = {},
-    ): Promise<AxiosResponse | undefined> {
-      /**
-       * Summary; if you have binary (non-alphanumeric) data
-       * (or a significantly sized payload) to transmit,
-       * use multipart/form-data.
-       * Otherwise, use application/x-www-form-urlencoded.
-       */
-
+      options: FormOptions<R> = {},
+    ): Promise<AxiosResponse<R> | undefined> {
       const {
         resetOnSuccess = false,
-        forceUrlEncoded = false, // to use with OAuth2 authentication
+        forceUrlEncoded = false,
         onBefore,
         onStart,
         onSuccess,
@@ -93,27 +82,20 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
         onFinish,
       } = options;
 
-      // Call onBefore hook
-      onBefore?.();
-
-      // Reset state
-      this.wasSuccessful = false;
-      this.recentlySuccessful = false;
-      this.clearErrors();
-
-      // Set processing state and call onStart
-      this.processing = true;
-      onStart?.();
-
       try {
-        // Get raw data
-        const data = this.getData();
+        onBefore?.();
 
-        // Prepare request config
+        this.wasSuccessful = false;
+        this.recentlySuccessful = false;
+        this.clearErrors();
+        this.processing = true;
+
+        onStart?.();
+
+        const data = this.getData();
         let requestData: any = data;
         const headers: Record<string, string> = {};
 
-        // Handle URL encoding for OAuth2
         if (forceUrlEncoded) {
           const params = new URLSearchParams();
           Object.keys(data).forEach((key) => {
@@ -125,7 +107,7 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
           headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
 
-        const response = await apiClient({
+        const response = await useNuxtApp().$axios<R>({
           method,
           url,
           data: method !== 'get' ? requestData : undefined,
@@ -133,46 +115,48 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
           headers,
         });
 
-        // Handle success
         this.wasSuccessful = true;
         this.recentlySuccessful = true;
 
-        // Clear recently successful after 2 seconds
         setTimeout(() => {
           this.recentlySuccessful = false;
         }, 2000);
 
-        // Reset form if requested
         if (resetOnSuccess) {
           this.reset();
         }
 
         onSuccess?.(response);
-
         return response;
+
       } catch (error) {
-        const axiosError = error as AxiosError<any>;
+        try {
+          // Safely handle axios errors
+          const axiosError = error as AxiosError<any>;
 
-        // Handle validation errors (422)
-        if (axiosError.response?.status === 422) {
-          const detail = axiosError.response.data?.detail;
-
-          if (Array.isArray(detail)) {
-            // Handle FastAPI style errors
-            detail.forEach((err: any) => {
-              const field = err.loc?.[1] || err.field;
-              if (field) {
-                this.setError(field, err.msg || err.message);
-              }
-            });
+          if (axiosError.response?.status === 422) {
+            const detail = axiosError.response.data?.detail;
+            if (Array.isArray(detail)) {
+              detail.forEach((err: any) => {
+                const field = err.loc?.[1] || err.field;
+                if (field) {
+                  this.setError(field, err.msg || err.message);
+                }
+              });
+            }
           }
-        }
 
-        onError?.(axiosError.response?.data || axiosError);
-
-        // Only throw if no error handler provided
-        if (!onError) {
-          throw error;
+          // Safely call onError callback
+          if (onError) {
+            onError(axiosError.response?.data || axiosError);
+          } else {
+            console.error('Form submission error:', error);
+            // throw error;
+          }
+        } catch (callbackError) {
+          // Handle errors in the onError callback
+          console.error('Error in form error callback:', callbackError);
+          console.error('Original form error:', error);
         }
       } finally {
         this.processing = false;
@@ -180,25 +164,25 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
       }
     },
 
-    // Convenience methods
-    get(url: string, options?: FormOptions) {
-      return this.submit('get', url, options);
+    // Convenience methods with proper typing
+    get<R = any>(url: string, options?: FormOptions<R>) {
+      return this.submit<R>('get', url, options);
     },
 
-    post(url: string, options?: FormOptions) {
-      return this.submit('post', url, options);
+    post<R = any>(url: string, options?: FormOptions<R>) {
+      return this.submit<R>('post', url, options);
     },
 
-    put(url: string, options?: FormOptions) {
-      return this.submit('put', url, options);
+    put<R = any>(url: string, options?: FormOptions<R>) {
+      return this.submit<R>('put', url, options);
     },
 
-    patch(url: string, options?: FormOptions) {
-      return this.submit('patch', url, options);
+    patch<R = any>(url: string, options?: FormOptions<R>) {
+      return this.submit<R>('patch', url, options);
     },
 
-    delete(url: string, options?: FormOptions) {
-      return this.submit('delete', url, options);
+    delete<R = any>(url: string, options?: FormOptions<R>) {
+      return this.submit<R>('delete', url, options);
     },
   });
 

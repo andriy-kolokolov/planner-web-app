@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue';
+import { onMounted } from 'vue';
 import colors from '#tailwind-config/theme/colors';
 
 const colorMode = useColorMode();
@@ -77,7 +77,7 @@ const primary = computed({
 });
 
 onMounted(() => {
-  console.log(appConfig.ui.colors);
+  // console.log(appConfig.ui.colors);
 });
 </script>
 
