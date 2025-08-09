@@ -1,11 +1,13 @@
+import type { UUID } from 'node:crypto';
+
 export interface User {
-  name: string;
-  lastname: string;
+  id: UUID; // uuid
   email: string;
-  username: string;
-  gender: string;
-  id: number;
-  is_active: boolean;
+  email_verified_at: string;
+  updated_at: string;
+  created_at: string;
+  // gender: string;
+  // is_active: boolean;
 }
 
 export interface Auth {

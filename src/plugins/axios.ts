@@ -4,7 +4,7 @@ import { useAuthStore } from '~/stores/useAuthStore';
 export default defineNuxtPlugin((_nuxtApp) => {
   const axiosInstance = axios.create({
     baseURL: useRuntimeConfig().public.apiUrl,
-    timeout: 2000, // Request timeout in milliseconds
+    timeout: 5000, // Request timeout in milliseconds
     headers: {
       'X-API-Secret': useRuntimeConfig().public.apiSecretKey,
     },

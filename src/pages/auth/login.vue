@@ -3,9 +3,9 @@
     <UForm :schema="loginFormSchema" :state="loginForm" class="space-y-4" @submit="onSubmit">
       <UFormGroup label="Username" name="username">
         <UInput
-          v-model="loginForm.username"
-          placeholder="nik they probably forget to write"
-          icon="i-heroicons-user-circle"
+          v-model="loginForm.email"
+          placeholder="email or nik they probably forget to write"
+          icon="i-mdi-email-outline"
           :disabled="loginForm.processing"
         />
       </UFormGroup>
@@ -20,7 +20,7 @@
       </UFormGroup>
 
       <div class="flex items-center gap-3">
-        <UButton type="submit" :loading="loginForm.processing"> LOGIN</UButton>
+        <UButton type="submit" :loading="loginForm.processing" :disabled="notFullFilledForm"> LOGIN</UButton>
         <span v-if="loginForm.recentlySuccessful" class="text-sm text-green-600"> Login successful! </span>
       </div>
     </UForm>
@@ -30,6 +30,10 @@
 <script setup lang="ts">
 import { loginForm, loginFormSchema } from '~/util/forms/loginForm';
 import type { AuthResponse } from '~/types/response';
+
+const notFullFilledForm = computed(() => {
+  return loginForm.email.length === 0 || loginForm.password.length === 0;
+});
 
 const onSubmit = async () => {
   await loginForm.post<AuthResponse>('api/v1/auth/login', {
@@ -44,7 +48,8 @@ const onSubmit = async () => {
       }, 500);
     },
     onError: (error) => {
-      useNuxtApp().$toast.error(error.detail || 'Login failed!');
+      console.log(error);
+      useNuxtApp().$toast.error(error.message || 'Login failed!');
     },
   });
 };

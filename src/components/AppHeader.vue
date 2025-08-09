@@ -46,39 +46,41 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import colors from '#tailwind-config/theme/colors';
+import { NUXT_UI_PRIMARY_COLOR } from '~/constants/localStorageKeys';
 
 const colorMode = useColorMode();
-// `colorMode.preference` is reactive and writes to localStorage,
-// and the module will add/remove `.dark` on <html>.
+const appConfig = useAppConfig();
 
 const toggleTheme = () => {
   colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark';
 };
 
-const appConfig = useAppConfig();
-
+// Build swatches using current theme tone for preview chip
 const primaryColors = computed(() =>
   appConfig.ui.colors
-    .filter((color) => color !== 'primary')
-    .map((color) => ({ value: color, text: color, hex: colors[color][colorMode.value === 'dark' ? 400 : 500] })),
+    .filter((color: string) => color !== 'primary')
+    .map((color: string) => ({
+      value: color,
+      text: color,
+      // 400 for dark, 500 for light for better contrast in the pill only
+      hex: colors[color]?.[colorMode.value === 'dark' ? 400 : 500] ?? '',
+    })),
 );
+
+// Two-way binding to appConfig.ui.primary with persistence
 const primary = computed({
   get() {
-    return primaryColors.value.find((option) => option.value === appConfig.ui.primary);
+    return primaryColors.value.find((colorOption) => colorOption.value === appConfig.ui.primary) ?? null;
   },
   set(option) {
     if (!option) return;
     appConfig.ui.primary = option.value;
-
-    window.localStorage.setItem('nuxt-ui-primary', appConfig.ui.primary);
+    try {
+      localStorage.setItem(NUXT_UI_PRIMARY_COLOR, option.value);
+    } catch {
+      /* ignore */
+    }
   },
 });
-
-onMounted(() => {
-  // console.log(appConfig.ui.colors);
-});
 </script>
-
-<style scoped></style>
