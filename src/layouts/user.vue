@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <!-- Sidebar - fixed width -->
-    <AppSidebar class="w-64 flex-shrink-0" />
+    <AppSidebar class="flex-shrink-0" />
 
     <!-- Main area - header + content -->
     <div class="flex-1 flex flex-col overflow-hidden">

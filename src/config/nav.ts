@@ -8,6 +8,7 @@ export interface NavItem {
   path?: RouteLocationRaw;
   icon?: string; // optional icon component name
   color?: string;
+  children?: NavItem[];
 }
 
 export const upperNavItems: NavItem[] = [
