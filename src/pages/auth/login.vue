@@ -1,27 +1,32 @@
 <template>
-  <UCard>
+  <UCard :ui="{ base: 'w-[400px]' }">
+    <template #header>
+      <h3 class="">Login</h3>
+    </template>
     <UForm :schema="loginFormSchema" :state="loginForm" class="space-y-4" @submit="onSubmit">
-      <UFormGroup label="Username" name="username">
-        <UInput
-          v-model="loginForm.email"
-          placeholder="email or nik they probably forget to write"
-          icon="i-mdi-email-outline"
-          :disabled="loginForm.processing"
-        />
-      </UFormGroup>
-      <UFormGroup label="Password" name="password">
-        <UInput
-          v-model="loginForm.password"
-          placeholder="******"
-          icon="i-heroicons-lock-closed"
-          type="password"
-          :disabled="loginForm.processing"
-        />
-      </UFormGroup>
+      <FormField
+        v-model:value="loginForm.email"
+        input-icon="i-mdi-email-outline"
+        label="Email"
+        :errors="loginForm.errors?.email"
+        placeholder="margaretti@mail.ru"
+      />
 
-      <div class="flex items-center gap-3">
-        <UButton type="submit" :loading="loginForm.processing" :disabled="notFullFilledForm"> LOGIN</UButton>
-        <span v-if="loginForm.recentlySuccessful" class="text-sm text-green-600"> Login successful! </span>
+      <FormField
+        v-model:value="loginForm.password"
+        input-icon="i-heroicons-lock-closed"
+        label="Password"
+        input-type="password"
+        :errors="loginForm.errors?.password"
+        placeholder="******"
+      />
+
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex gap-3">
+          <UButton type="submit" :loading="loginForm.processing" :disabled="notFullFilledForm"> LOGIN</UButton>
+          <span v-if="loginForm.recentlySuccessful" class="text-sm text-green-600"> Login successful! </span>
+        </div>
+        <UButton variant="link" icon="i-mdi-register" @click="navigateTo('/auth/signup')">Register</UButton>
       </div>
     </UForm>
   </UCard>
@@ -30,6 +35,8 @@
 <script setup lang="ts">
 import { loginForm, loginFormSchema } from '~/util/forms/loginForm';
 import type { AuthResponse } from '~/types/response';
+import FormField from '~/components/ui/form/FormField.vue';
+import { registerForm } from '~/util/forms/registerForm';
 
 const notFullFilledForm = computed(() => {
   return loginForm.email.length === 0 || loginForm.password.length === 0;

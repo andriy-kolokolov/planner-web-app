@@ -22,7 +22,7 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
     ...initialData,
 
     // Form state
-    errors: {} as Record<string, string | string[]>,
+    errors: null as Record<keyof T, string[]> | null,
     hasErrors: false,
     processing: false,
     wasSuccessful: false,
@@ -31,16 +31,29 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
     // Methods
     clearErrors(...fields: string[]) {
       if (fields.length === 0) {
-        this.errors = {};
+        this.errors = null;
         this.hasErrors = false;
       } else {
-        fields.forEach((field) => delete this.errors[field]);
+        if (!this.errors) {
+          return;
+        }
+
+        fields.forEach((field) => {
+          if (this.errors && this.errors[field]) {
+            delete this.errors[field];
+          }
+        });
+
         this.hasErrors = Object.keys(this.errors).length > 0;
       }
     },
 
     setError(field: string, value: string | string[]) {
-      this.errors[field] = value;
+      if (!this.errors) {
+        this.errors = {} as Record<keyof T, string[]>;
+      }
+
+      this.errors[field as keyof T] = Array.isArray(value) ? value : [value];
       this.hasErrors = true;
     },
 
@@ -120,34 +133,23 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
 
         onSuccess?.(response);
         return response;
-      } catch (error) {
-        try {
-          // Safely handle axios errors
-          const axiosError = error as AxiosError<any>;
+      } catch (errorResponse) {
+        const axiosError = errorResponse as AxiosError<T>;
 
-          if (axiosError.response?.status === 422) {
-            const detail = axiosError.response.data?.detail;
-            if (Array.isArray(detail)) {
-              detail.forEach((err: any) => {
-                const field = err.loc?.[1] || err.field;
-                if (field) {
-                  this.setError(field, err.msg || err.message);
-                }
-              });
-            }
-          }
+        if (axiosError.status === 422) {
+          const errors = axiosError.response?.data?.errors as Record<keyof T, string[]>;
 
-          // Safely call onError callback
-          if (onError) {
-            onError(axiosError.response?.data || axiosError);
-          } else {
-            console.error('Form submission error:', error);
-            // throw error;
+          for (const [key, value] of Object.entries(errors)) {
+            this.setError(key, value);
           }
-        } catch (callbackError) {
-          // Handle errors in the onError callback
-          console.error('Error in form error callback:', callbackError);
-          console.error('Original form error:', error);
+        }
+
+        // Safely call onError callback
+        if (onError) {
+          onError(axiosError.response?.data || axiosError);
+        } else {
+          console.error('Form submission error:', errorResponse);
+          // throw error;
         }
       } finally {
         this.processing = false;

@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to, _from) => {
-  // console.log('auth middleware');
+  console.log('auth middleware');
 
   const authStore = useAuthStore();
   const auth = authStore.getAuthData();
