@@ -27,11 +27,6 @@ export default defineNuxtConfig({
       apiSecretKey: '',
       apiSecretHeaderName: '',
     },
-    modules: ['@nuxtjs/robots'],
-    robots: {
-      UserAgent: '*',
-      Disallow: '/',
-    },
   },
   srcDir: './src',
   compatibilityDate: '2025-07-02',

@@ -43,7 +43,7 @@ const notFullFilledForm = computed(() => {
 });
 
 const onSubmit = async () => {
-  await loginForm.post<AuthResponse>('api/v1/auth/login', {
+  await loginForm.post<AuthResponse>('/api/v1/auth/login', {
     forceUrlEncoded: true,
     onSuccess: (response) => {
       // response.data is now typed as AuthResponse
@@ -56,7 +56,7 @@ const onSubmit = async () => {
     },
     onError: (error) => {
       console.log(error);
-      useNuxtApp().$toast.error(error.message || 'Login failed!');
+      useNuxtApp().$toast.error(JSON.stringify(error));
     },
   });
 };

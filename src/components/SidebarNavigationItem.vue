@@ -1,6 +1,5 @@
 <template>
-  <li class="px-2">
-    <!-- Main row (tooltip only when collapsed) -->
+  <div class="px-2 m-0">
     <component
       :is="isCollapsed ? UTooltip : 'div'"
       v-bind="isCollapsed ? { text: navigationItem.label, popper: { placement: 'right' } } : {}"
@@ -14,14 +13,12 @@
         @click="handleMainRowClick"
       >
         <UIcon v-if="navigationItem.icon" :name="navigationItem.icon" class="w-5 h-5 shrink-0" />
-        <!-- Label transition -->
-        <Transition name="fade-label">
-          <span v-if="!isCollapsed" class="truncate inline-block">{{ navigationItem.label }}</span>
-        </Transition>
+        <Transition name="fade-label"
+          ><span v-if="!isCollapsed" class="truncate inline-block text-sm">{{ navigationItem.label }}</span></Transition
+        >
       </component>
     </component>
 
-    <!-- Children (slide open/close) -->
     <Transition
       @before-enter="onChildrenBeforeEnter"
       @enter="onChildrenEnter"
@@ -29,8 +26,8 @@
       @before-leave="onChildrenBeforeLeave"
       @leave="onChildrenLeave"
     >
-      <ul v-if="!isCollapsed && hasChildren" class="mt-1 ml-8 space-y-1">
-        <li v-for="childNavigationItem in navigationItem.children" :key="childNavigationItem.key">
+      <div v-if="!isCollapsed && hasChildren" class="mt-1 ml-8">
+        <div v-for="childNavigationItem in navigationItem.children" :key="childNavigationItem.key">
           <component
             :is="childNavigationItem.path ? NuxtLink : 'button'"
             :to="childNavigationItem.path"
@@ -40,29 +37,20 @@
             @click="childNavigationItem.action?.()"
           >
             <UIcon v-if="childNavigationItem.icon" :name="childNavigationItem.icon" class="w-4 h-4 shrink-0" />
-            <span class="truncate">{{ childNavigationItem.label }}</span>
+            <span class="truncate text-sm">{{ childNavigationItem.label }}</span>
           </component>
-        </li>
-      </ul>
+        </div>
+      </div>
     </Transition>
-  </li>
+  </div>
 </template>
 
 <script setup lang="ts">
-/**
- * Single navigation item.
- * - Fixes: reliable CSS transition classes + JS height hooks.
- * - Collapsed parent with children: first click expands sidebar instead of navigating.
- */
 import { computed } from 'vue';
 import { NuxtLink, UTooltip, UIcon } from '#components';
 import type { NavItem } from '~/config/nav';
 
-const props = defineProps<{
-  navigationItem: NavItem;
-  isCollapsed: boolean;
-}>();
-
+const props = defineProps<{ navigationItem: NavItem; isCollapsed: boolean }>();
 const emit = defineEmits<{ (event: 'request-expand'): void }>();
 
 const baseNavigationItemClass =
@@ -79,44 +67,40 @@ function handleMainRowClick(event: MouseEvent) {
   props.navigationItem.action?.();
 }
 
-/** Height animation hooks (robust against dynamic content) */
 function onChildrenBeforeEnter(el: Element) {
-  const element = el as HTMLElement;
-  element.style.height = '0px';
-  element.style.overflow = 'hidden';
+  const e = el as HTMLElement;
+  e.style.height = '0px';
+  e.style.overflow = 'hidden';
 }
 function onChildrenEnter(el: Element) {
-  const element = el as HTMLElement;
-  element.style.transition = 'height 220ms ease, opacity 150ms ease';
-  element.style.opacity = '0';
-  // force reflow, then expand
-  void element.offsetHeight;
-  element.style.height = `${element.scrollHeight}px`;
-  element.style.opacity = '1';
+  const e = el as HTMLElement;
+  e.style.transition = 'height 220ms ease, opacity 150ms ease';
+  e.style.opacity = '0';
+  void e.offsetHeight;
+  e.style.height = `${e.scrollHeight}px`;
+  e.style.opacity = '1';
 }
 function onChildrenAfterEnter(el: Element) {
-  const element = el as HTMLElement;
-  element.style.height = 'auto';
-  element.style.overflow = '';
-  element.style.transition = '';
+  const e = el as HTMLElement;
+  e.style.height = 'auto';
+  e.style.overflow = '';
+  e.style.transition = '';
 }
 function onChildrenBeforeLeave(el: Element) {
-  const element = el as HTMLElement;
-  element.style.height = `${element.scrollHeight}px`;
-  element.style.overflow = 'hidden';
+  const e = el as HTMLElement;
+  e.style.height = `${e.scrollHeight}px`;
+  e.style.overflow = 'hidden';
 }
 function onChildrenLeave(el: Element) {
-  const element = el as HTMLElement;
-  element.style.transition = 'height 200ms ease, opacity 150ms ease';
-  // force reflow
-  void element.offsetHeight;
-  element.style.height = '0px';
-  element.style.opacity = '0';
+  const e = el as HTMLElement;
+  e.style.transition = 'height 200ms ease, opacity 150ms ease';
+  void e.offsetHeight;
+  e.style.height = '0px';
+  e.style.opacity = '0';
 }
 </script>
 
 <style scoped>
-/* Ensure transition classes are not blocked by scoping */
 :global(.fade-label-enter-active),
 :global(.fade-label-leave-active) {
   transition:

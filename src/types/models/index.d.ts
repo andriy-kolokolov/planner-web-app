@@ -2,6 +2,8 @@ import type { UUID } from 'node:crypto';
 
 export interface User {
   id: UUID; // uuid
+  name: string;
+  lastname: string;
   email: string;
   email_verified_at: string;
   updated_at: string;

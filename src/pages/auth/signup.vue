@@ -63,7 +63,7 @@ const notFullFilledForm = computed(() => {
 });
 
 const submitSignup = async () => {
-  await registerForm.post<RegisterResponse>('api/v1/auth/register', {
+  await registerForm.post<RegisterResponse>('/api/v1/auth/register', {
     forceUrlEncoded: true,
     onSuccess: (response) => {
       setTimeout(() => {

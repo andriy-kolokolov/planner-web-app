@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     initAuth() {
-      const auth = localStorage.getItem(AUTH_DATA_STORAGE) as unknown as Auth | null;
+      const auth = this.getAuthData();
       if (auth) {
         this.auth = { ...auth };
         this.isAuthenticated = true;
@@ -42,8 +42,7 @@ export const useAuthStore = defineStore('auth', {
 
     async logout() {
       try {
-        const resp = await useNuxtApp().$axios.post('/api/v1/auth/logout');
-        console.log(resp);
+        await useNuxtApp().$axios.post('/api/v1/auth/logout');
       } catch (error) {
         console.error('Logout error:', error);
       } finally {

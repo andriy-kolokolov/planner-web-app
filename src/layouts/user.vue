@@ -6,7 +6,7 @@
     <!-- Main area - header + content -->
     <div class="flex-1 flex flex-col overflow-hidden">
       <!-- Header - fixed height -->
-      <AppHeader class="h-16 flex-shrink-0" />
+      <AppHeader />
 
       <!-- Scrollable content area -->
       <main class="flex-1 overflow-auto p-6">

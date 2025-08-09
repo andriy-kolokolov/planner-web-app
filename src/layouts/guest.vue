@@ -1,7 +1,5 @@
 <template>
   <div class="min-h-screen flex flex-col">
-    <!-- Fixed header height -->
-    <AppHeader class="h-[65px]" />
     <!-- Main content area takes remaining space -->
     <main class="flex-1 flex items-center justify-center">
       <slot />
