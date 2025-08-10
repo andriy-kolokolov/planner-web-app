@@ -21,6 +21,9 @@ const getUserData = async () => {
   try {
     const { $axios } = useNuxtApp();
     const resp = await $axios.get<{ user: User }>('/api/v1/auth/user');
+
+    console.log('resp', resp);
+
     state.userData = { ...resp.data.user };
     console.log('get auth data', useAuthStore().getAuthData());
   } catch (err) {

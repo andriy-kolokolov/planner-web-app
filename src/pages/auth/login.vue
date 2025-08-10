@@ -23,10 +23,10 @@
 
       <div class="flex items-center justify-between gap-3">
         <div class="flex gap-3">
-          <UButton type="submit" :loading="loginForm.processing" :disabled="notFullFilledForm"> LOGIN</UButton>
+          <UButton type="submit" :loading="loginForm.processing" :disabled="notFullFilledForm" icon="i-mdi-login"> LOGIN</UButton>
           <span v-if="loginForm.recentlySuccessful" class="text-sm text-green-600"> Login successful! </span>
         </div>
-        <UButton variant="link" icon="i-mdi-register" @click="navigateTo('/auth/signup')">Register</UButton>
+        <UButton variant="link" icon="i-mdi-register" @click="navigateTo('/auth/signup')">Signup</UButton>
       </div>
     </UForm>
   </UCard>

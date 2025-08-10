@@ -2,7 +2,7 @@
   <!-- Desktop sidebar -->
   <aside
     v-bind="attrs"
-    class="hidden md:block h-full border-r border-gray-200/70 dark:border-gray-700/60 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white overflow-hidden transition-[width] duration-300 ease-in-out"
+    class="hidden md:block h-full border-r border-gray-200/70 font-bold dark:border-gray-700/60 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white overflow-hidden transition-[width] duration-300 ease-in-out"
     :class="isSidebarVisuallyExpanded ? 'w-64' : 'w-16'"
     @mouseenter="onAsideMouseEnter"
     @mouseleave="onAsideMouseLeave"
@@ -23,7 +23,7 @@
     <!--    </div> -->
 
     <div class="flex flex-col justify-between h-[calc(100%-44px)]">
-      <div class="py-2 m-0">
+      <div class="py-2 m-0 flex flex-col gap-1.5">
         <SidebarNavigationItem
           v-for="navigationItem in navigationItemsUpperComputed"
           :key="navigationItem.key"
@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div class="py-2 m-0">
+      <div class="py-2 m-0 flex flex-col gap-1.5">
         <div class="px-5 py-2">
           <UDivider />
         </div>

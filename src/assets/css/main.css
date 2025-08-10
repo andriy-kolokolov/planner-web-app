@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens + base */
+@layer base {
+    :root {
+        /* Brand primary scale */
+        --brand-primary-50:      #eef8ff;
+        --brand-primary-100:     #d9efff;
+        --brand-primary-200:     #bbe4ff;
+        --brand-primary-300:     #8dd5ff;
+        --brand-primary-400:     #57bbff;
+        --brand-primary-500:     #309cff; /* DEFAULT */
+        --brand-primary-600:     #197ef7;
+        --brand-primary-700:     #1266e3;
+        --brand-primary-800:     #1552b8;
+        --brand-primary-900:     #164387;
+        --brand-primary-950:     #132d58;
+
+        /* Brand secondary scale */
+        --brand-secondary-50:    #f7f7f8;
+        --brand-secondary-100:   #eeedf1;
+        --brand-secondary-200:   #d8d8df;
+        --brand-secondary-300:   #b6b6c3;
+        --brand-secondary-400:   #8e8fa2;
+        --brand-secondary-500:   #707187; /* DEFAULT */
+        --brand-secondary-600:   #5c5c71;
+        --brand-secondary-700:   #4b4a5a;
+        --brand-secondary-800:   #3f3f4d;
+        --brand-secondary-900:   #393842;
+        --brand-secondary-950:   #26252c;
+
+        /* Singles */
+        --brand-accent:          #00b7ff;
+        --brand-gray-100:        #a4a6aa;
+        --brand-gray-200:        #DEE1E8;
+        --brand-gray-300:        #F5F8FA;
+        --brand-gray-400:        #A6ACBA;
+        --brand-success:         #49C481;
+        --brand-soft-green:      #86D086;
+        --brand-warning:         #F4C755;
+        --brand-error:           #F1416C;
+        --brand-error-dark:      #c23458;
+        --brand-tomato:          #E1685D;
+        --brand-green-100:       #E8FAEB;
+
+        /* Status */
+        --status-new-text:       #2A3985;
+        --status-new:            #0D2CC6;
+        --status-complete-text:  #08552B;
+        --status-complete:       #41AA70;
+        --status-waiting-text:   #6F4515;
+        --status-waiting:        #F39529;
+        --status-progress-text:  #1B4E7F;
+        --status-progress:       #2487E4;
+        --status-scheduled-text: #5120A4;
+        --status-scheduled:      #844BE5;
+        --status-escalate-text:  #811D1D;
+        --status-escalate:       #E94040;
+        --status-approved-text:  #08552B;
+        --status-approved:       #41AA70;
+        --status-denied-text:    #811D1D;
+        --status-denied:         #E94040;
+        --status-general-text:   #084948;
+        --status-general:        #27BFBD;
+        --status-demo-text:      #631C72;
+        --status-demo:           #C740E3;
+
+        /* Priority (note these include alpha) */
+        --priority-critical:     #F1414169;
+        --priority-high:         #F17C4159;
+        --priority-medium:       #FFEBC1;
+        --priority-low:          #CDF2DE;
+    }
+
+    /* Base font */
+    html {
+        font-family:         "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto,
+                             "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+                             "Segoe UI Emoji", sans-serif;
+        font-style:          normal;
+        font-optical-sizing: auto;
+        font-weight:         500;
+    }
+}
+
+/* Optional: convenience aliases that feel like theme colors
+   (Use only if you really want classnames like text-brand-primary-500)
+   Otherwise, just use bracket notation directly (see examples below). */
+@layer utilities {
+    .text-brand-primary-500 {
+        color: var(--brand-primary-500)
+    }
+
+    .bg-brand-primary-500 {
+        background-color: var(--brand-primary-500)
+    }
+
+    .border-brand-primary-500 {
+        border-color: var(--brand-primary-500)
+    }
+
+    /* Add more if you want the whole scale… or stick with brackets. */
+}
+
+/* Aspect ratios: use Tailwind’s built-ins: aspect-auto | aspect-square | aspect-video */

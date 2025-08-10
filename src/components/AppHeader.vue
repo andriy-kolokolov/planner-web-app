@@ -35,7 +35,6 @@
       <!-- Desktop search -->
       <div class="hidden md:flex items-center w-full max-w-lg mx-4">
         <form class="relative w-full" @submit.prevent="handleSearchSubmit">
-          <UIcon name="i-heroicons-magnifying-glass-20-solid" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <UInput
             v-model="searchQuery"
             :ui="{ base: 'pl-10 pr-14' }"
@@ -43,12 +42,8 @@
             variant="outline"
             placeholder="Search…"
             aria-label="Search"
+            icon="i-lucide-search"
           />
-          <span
-            class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hidden lg:inline-flex items-center gap-1"
-          >
-            <span class="rounded border border-gray-300/80 dark:border-gray-600/80 px-1">⌘</span>K
-          </span>
         </form>
       </div>
 
@@ -71,7 +66,7 @@
         </UPopover>
 
         <!-- Color picker (keeps your ColorPickerPill) -->
-        <UPopover mode="hover" :popper="{ strategy: 'absolute' }" :ui="{ width: 'w-[176px]' }" :delay="{ show: 60, hide: 80 }">
+        <UPopover mode="click" :popper="{ strategy: 'absolute' }" :ui="{ width: 'w-[176px]' }" :delay="{ show: 60, hide: 80 }">
           <template #default="{ open }">
             <UButton variant="ghost" square :class="[open && 'bg-gray-50 dark:bg-gray-800']" aria-label="Open color picker">
               <UIcon name="i-heroicons-swatch-20-solid" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
@@ -170,6 +165,7 @@ const searchQuery = ref('');
 
 function handleSearchSubmit() {
   if (!searchQuery.value?.trim()) return;
+  console.log('searchQuery.value', searchQuery.value);
   // navigateTo({ path: '/search', query: { q: searchQuery.value } })
   searchQuery.value = '';
 }

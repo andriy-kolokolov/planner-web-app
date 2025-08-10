@@ -1,15 +1,27 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/icon', '@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxtjs/color-mode'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxt/eslint',
+    '@nuxt/icon',
+    '@pinia/nuxt',
+    '@nuxtjs/color-mode',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/fonts',
+  ],
   ssr: false,
   devtools: { enabled: true },
-  css: ['~/assets/scss/main.scss'],
+  css: ['~/assets/css/main.css'],
   colorMode: {
     classSuffix: '', // so it uses `<html class="dark">` instead of `dark-mode`
   },
   ui: {
     global: true,
     safelistColors: [ 'brand-primary', 'brand-secondary', 'brand-accent'],
+  },
+  tailwindcss: {
+    // Expose tailwind config with #tailwind-config
+    exposeConfig: true,
   },
   runtimeConfig: {
     // const config = useRuntimeConfig()
