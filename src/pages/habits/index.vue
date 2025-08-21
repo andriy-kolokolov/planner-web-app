@@ -64,14 +64,14 @@
       :ui="{ td: { base: 'max-w-[0] truncate' } }"
       @select="select"
     >
-      <template #completed-data="{ row }">
-        <UBadge
-          size="xs"
-          :label="row.completed ? 'Completed' : 'In Progress'"
-          :color="row.completed ? 'emerald' : 'orange'"
-          variant="subtle"
-        />
-      </template>
+      <!--      <template #completed-data="{ row }">-->
+      <!--        <UBadge-->
+      <!--          size="xs"-->
+      <!--          :label="row.completed ? 'Completed' : 'In Progress'"-->
+      <!--          :color="row.completed ? 'emerald' : 'orange'"-->
+      <!--          variant="subtle"-->
+      <!--        />-->
+      <!--      </template>-->
 
       <template #actions-data="{ row }">
         <UButton
@@ -127,21 +127,36 @@
 </template>
 
 <script setup lang="ts">
-interface HabitModel {
-  id: number;
-  title: string;
-  completed: boolean;
+import type { PaginatedData } from '~/types/response';
+import type { TableColumn } from '#ui/types';
+
+interface HabitResource {
+  id: string;
+  name: string;
+  description: string;
+  color_hex: string;
+  icon: string;
+  start_date: string;
+  end_date: string | null;
+  is_archived: boolean;
+  schedule_kind: number;
+  interval_days: number;
+  days_of_week: number[] | null;
+  target_per_period: number | null;
+  is_prompt_wellbeing: boolean;
+  reminders: string[] | null;
+  streak_current: number;
+  streak_longest: number;
+  last_completed_at: string | null;
+  priority: number;
+  sort_order: number;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-type ColumnKey = keyof HabitModel;
-
-interface UITableColumn<T = unknown> {
-  key: 'select' | 'actions' | ColumnKey;
-  label?: string;
-  class?: string;
-  sortable?: boolean;
-  direction?: 'asc' | 'desc';
-  // You can extend with accessor/format if you use advanced APIs.
+interface UITableColumn<T = unknown> extends TableColumn {
+  key: 'select' | 'actions' | keyof HabitResource;
 }
 
 type BulkActionKey = 'completed' | 'uncompleted';
@@ -159,7 +174,7 @@ interface UISelectOption<T = unknown> {
 }
 
 /** Sort state (manual) */
-type SortableHabitKey = Extract<keyof HabitModel, 'id' | 'title' | 'completed'>;
+type SortableHabitKey = Extract<keyof HabitResource, 'id' | 'title' | 'completed'>;
 interface TableSort {
   column: SortableHabitKey;
   direction: 'asc' | 'desc';
@@ -167,26 +182,43 @@ interface TableSort {
 
 /** Slots typing for UTable row-scoped slots */
 defineSlots<{
-  'completed-data'(props: { row: HabitModel }): any;
-  'actions-data'(props: { row: HabitModel }): any;
+  'completed-data'(props: { row: HabitResource }): any;
+  'actions-data'(props: { row: HabitResource }): any;
 }>();
 
 const columns = [
   { key: 'select', class: 'w-2' },
-  { key: 'id', label: '#', sortable: true },
-  { key: 'title', label: 'Title', sortable: true },
-  { key: 'completed', label: 'Status', sortable: true },
-  { key: 'actions', label: 'Actions', sortable: false },
-] satisfies Readonly<UITableColumn<HabitModel>[]>;
+  { key: 'name', label: 'Name', sortable: true },
+  { key: 'description', label: 'Description', sortable: true },
+  { key: 'color_hex', label: 'Color', sortable: true },
+  { key: 'icon', label: 'Icon', sortable: true },
+  { key: 'start_date', label: 'Start Date', sortable: true },
+  { key: 'end_date', label: 'End Date', sortable: true },
+  { key: 'is_archived', label: 'Archived', sortable: true },
+  { key: 'schedule_kind', label: 'Schedule Kind', sortable: true },
+  { key: 'interval_days', label: 'Interval Days', sortable: true },
+  { key: 'days_of_week', label: 'Days of Week', sortable: true },
+  { key: 'target_per_period', label: 'Target Per Period', sortable: true },
+  { key: 'is_prompt_wellbeing', label: 'Prompt Wellbeing', sortable: true },
+  { key: 'reminders', label: 'Reminders', sortable: true },
+  { key: 'streak_current', label: 'Streak Current', sortable: true },
+  { key: 'streak_longest', label: 'Streak Longest', sortable: true },
+  { key: 'last_completed_at', label: 'Last Completed At', sortable: true },
+  { key: 'priority', label: 'Priority', sortable: true },
+  { key: 'sort_order', label: 'Sort Order', sortable: true },
+  { key: 'deleted_at', label: 'Deleted At', sortable: true },
+  { key: 'created_at', label: 'Created At', sortable: true },
+  { key: 'updated_at', label: 'Updated At', sortable: true },
+] as UITableColumn<HabitResource>[];
 
-const selectedColumns = ref<UITableColumn<HabitModel>[]>([...columns]);
-const columnsTable = computed<UITableColumn<HabitModel>[]>(() => columns.filter((c) => selectedColumns.value.includes(c)));
-const excludeSelectColumn = computed<UITableColumn<HabitModel>[]>(() => columns.filter((c) => c.key !== 'select'));
+const selectedColumns = ref<UITableColumn<HabitResource>[]>([...columns]);
+const columnsTable = computed<UITableColumn<HabitResource>[]>(() => columns.filter((c) => selectedColumns.value.includes(c)));
+const excludeSelectColumn = computed<UITableColumn<HabitResource>[]>(() => columns.filter((c) => c.key !== 'select'));
 
 /** Selected Rows */
-const selectedRows = ref<HabitModel[]>([]);
+const selectedRows = ref<HabitResource[]>([]);
 
-function select(row: HabitModel) {
+function select(row: HabitResource) {
   const idx = selectedRows.value.findIndex((r) => r.id === row.id);
   if (idx === -1) selectedRows.value.push(row);
   else selectedRows.value.splice(idx, 1);
@@ -212,7 +244,7 @@ const pageTotal = ref<number>(200);
 const pageFrom = computed<number>(() => (page.value - 1) * pageCount.value + 1);
 const pageTo = computed<number>(() => Math.min(page.value * pageCount.value, pageTotal.value));
 
-const habitsData = ref<HabitModel[]>([]);
+const habitsData = ref<HabitResource[]>([]);
 
 const statusOptions = computed(() => {
   return [
@@ -229,7 +261,7 @@ const resetFilters = (): void => {
 const fetchData = async () => {
   isFetching.value = true;
   try {
-    const resp = await useNuxtApp().$axios.get<{ habits: HabitModel[] }>('/api/v1/habits/list', {
+    const resp = await useNuxtApp().$axios.get<{ habits: PaginatedData<HabitResource> }>('/api/v1/habits/list', {
       params: {
         ...filters,
         search: search.value,
@@ -238,9 +270,11 @@ const fetchData = async () => {
       },
     });
 
+    const responseData = resp.data.habits;
+
     if (resp.status === 200) {
-      habitsData.value = { ...resp.data.habits };
-      pageTotal.value = resp.data.total;
+      habitsData.value = [...responseData.data];
+      pageTotal.value = responseData.total;
     }
   } catch (e) {
     console.info('error', e);
