@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxtjs/tailwindcss',
     '@nuxt/fonts',
+    'nuxt-lodash'
   ],
   ssr: false,
   devtools: { enabled: true },

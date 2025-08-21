@@ -11,14 +11,14 @@
     }"
   >
     <template #header>
-      <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">Todos</h2>
+      <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">Habits</h2>
     </template>
 
     <!-- Filters -->
     <div class="flex items-center justify-between gap-3 px-4 py-3">
       <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
 
-      <USelectMenu v-model="selectedStatus" :options="todoStatus" multiple placeholder="Status" class="w-40" />
+      <USelectMenu v-model="filters.statuses" :options="statusOptions" multiple placeholder="Status" class="w-40" />
     </div>
 
     <!-- Header and Action buttons -->
@@ -30,7 +30,7 @@
       </div>
 
       <div class="flex gap-1.5 items-center">
-        <UDropdown v-if="selectedRows.length > 1" :items="actions" :ui="{ width: 'w-36' }">
+        <UDropdown v-if="selectedRows.length > 1" :items="bulkActions" :ui="{ width: 'w-36' }">
           <UButton icon="i-heroicons-chevron-down" trailing color="gray" size="xs"> Mark as </UButton>
         </UDropdown>
 
@@ -42,7 +42,7 @@
           icon="i-heroicons-funnel"
           color="gray"
           size="xs"
-          :disabled="search === '' && selectedStatus.length === 0"
+          :disabled="search === '' && filters.statuses.length === 0"
           @click="resetFilters"
         >
           Reset
@@ -54,9 +54,9 @@
     <UTable
       v-model="selectedRows"
       v-model:sort="sort"
-      :rows="todos"
+      :rows="habitsData"
       :columns="columnsTable"
-      :loading="status === 'pending'"
+      :loading="isFetching"
       sort-asc-icon="i-heroicons-arrow-up"
       sort-desc-icon="i-heroicons-arrow-down"
       sort-mode="manual"
@@ -127,29 +127,16 @@
 </template>
 
 <script setup lang="ts">
-/**
- * If your project resolves Nuxt UI v2.21 type aliases, you can replace the local types:
- *
- *   import type { TableColumn, DropdownItem, SelectMenuOption } from '#ui/types'
- *   type UITableColumn<T> = TableColumn<T>
- *   type UIDropdownItem   = DropdownItem
- *   type UISelectOption   = SelectMenuOption
- *
- * Otherwise the local shapes below mirror the public API closely.
- */
-
-/** Domain models */
-interface Todo {
+interface HabitModel {
   id: number;
   title: string;
   completed: boolean;
 }
 
-/** UI model helpers (local fallbacks) */
-type ColumnKey = 'select' | 'id' | 'title' | 'completed' | 'actions';
+type ColumnKey = keyof HabitModel;
 
 interface UITableColumn<T = unknown> {
-  key: ColumnKey;
+  key: 'select' | 'actions' | ColumnKey;
   label?: string;
   class?: string;
   sortable?: boolean;
@@ -157,9 +144,9 @@ interface UITableColumn<T = unknown> {
   // You can extend with accessor/format if you use advanced APIs.
 }
 
-type ActionKey = 'completed' | 'uncompleted';
+type BulkActionKey = 'completed' | 'uncompleted';
 interface UIDropdownItem {
-  key: ActionKey;
+  key: BulkActionKey;
   label: string;
   icon?: string;
 }
@@ -172,95 +159,110 @@ interface UISelectOption<T = unknown> {
 }
 
 /** Sort state (manual) */
-type SortableTodoKey = Extract<keyof Todo, 'id' | 'title' | 'completed'>;
+type SortableHabitKey = Extract<keyof HabitModel, 'id' | 'title' | 'completed'>;
 interface TableSort {
-  column: SortableTodoKey;
+  column: SortableHabitKey;
   direction: 'asc' | 'desc';
 }
 
 /** Slots typing for UTable row-scoped slots */
 defineSlots<{
-  'completed-data'(props: { row: Todo }): any;
-  'actions-data'(props: { row: Todo }): any;
+  'completed-data'(props: { row: HabitModel }): any;
+  'actions-data'(props: { row: HabitModel }): any;
 }>();
 
-/** Columns */
 const columns = [
   { key: 'select', class: 'w-2' },
   { key: 'id', label: '#', sortable: true },
   { key: 'title', label: 'Title', sortable: true },
   { key: 'completed', label: 'Status', sortable: true },
   { key: 'actions', label: 'Actions', sortable: false },
-] satisfies Readonly<UITableColumn<Todo>[]>; // strong shapes & immutability
+] satisfies Readonly<UITableColumn<HabitModel>[]>;
 
-const selectedColumns = ref<UITableColumn<Todo>[]>([...columns]);
-const columnsTable = computed<UITableColumn<Todo>[]>(() => columns.filter((c) => selectedColumns.value.includes(c)));
-const excludeSelectColumn = computed<UITableColumn<Todo>[]>(() => columns.filter((c) => c.key !== 'select'));
+const selectedColumns = ref<UITableColumn<HabitModel>[]>([...columns]);
+const columnsTable = computed<UITableColumn<HabitModel>[]>(() => columns.filter((c) => selectedColumns.value.includes(c)));
+const excludeSelectColumn = computed<UITableColumn<HabitModel>[]>(() => columns.filter((c) => c.key !== 'select'));
 
 /** Selected Rows */
-const selectedRows = ref<Todo[]>([]);
+const selectedRows = ref<HabitModel[]>([]);
 
-function select(row: Todo) {
+function select(row: HabitModel) {
   const idx = selectedRows.value.findIndex((r) => r.id === row.id);
   if (idx === -1) selectedRows.value.push(row);
   else selectedRows.value.splice(idx, 1);
 }
 
-/** Actions (grouped) */
-const actions: UIDropdownGroups = [
+const bulkActions: UIDropdownGroups = [
   [{ key: 'completed', label: 'Completed', icon: 'i-heroicons-check' }],
   [{ key: 'uncompleted', label: 'In Progress', icon: 'i-heroicons-arrow-path' }],
 ];
 
-/** Filters */
-const todoStatus = [
-  { key: 'uncompleted', label: 'In Progress', value: false },
-  { key: 'completed', label: 'Completed', value: true },
-] satisfies Readonly<UISelectOption<boolean>[]>;
-
+const isFetching = ref<boolean>(false);
+/** filters */
 const search = ref<string>('');
-const selectedStatus = ref<UISelectOption<boolean>[]>([]);
-
-/** Safer querystring builder for the `completed` filter */
-const searchStatus = computed<string>(() => {
-  if (selectedStatus.value.length === 0) return '';
-  const params = new URLSearchParams();
-  for (const opt of selectedStatus.value) params.append('completed', String(opt.value));
-  return `?${params.toString()}`;
+const filters = reactive({
+  statuses: [],
 });
-
-const resetFilters = (): void => {
-  search.value = '';
-  selectedStatus.value = [];
-};
-
 /** Pagination & sorting */
 const sort = ref<TableSort>({ column: 'id', direction: 'asc' });
 const page = ref<number>(1);
 const pageCount = ref<number>(10);
 const pageCountOptions: number[] = [3, 5, 10, 20, 30, 40];
-const pageTotal = ref<number>(200); // TODO: use X-Total-Count from API when available
+const pageTotal = ref<number>(200);
 const pageFrom = computed<number>(() => (page.value - 1) * pageCount.value + 1);
 const pageTo = computed<number>(() => Math.min(page.value * pageCount.value, pageTotal.value));
 
-/** Data */
-const { data: todos, status } = await useLazyAsyncData<Todo[]>(
-  'todos',
-  () =>
-    $fetch<Todo[]>(`https://jsonplaceholder.typicode.com/todos${searchStatus.value}`, {
-      query: {
-        q: search.value,
-        _page: page.value,
-        _limit: pageCount.value,
-        _sort: sort.value.column,
-        _order: sort.value.direction,
+const habitsData = ref<HabitModel[]>([]);
+
+const statusOptions = computed(() => {
+  return [
+    { key: 'uncompleted', label: 'In Progress', value: false },
+    { key: 'completed', label: 'Completed', value: true },
+  ] satisfies Readonly<UISelectOption<boolean>[]>;
+});
+
+const resetFilters = (): void => {
+  search.value = '';
+  filters.statuses = [];
+};
+
+const fetchData = async () => {
+  isFetching.value = true;
+  try {
+    const resp = await useNuxtApp().$axios.get<{ habits: HabitModel[] }>('/api/v1/habits/list', {
+      params: {
+        ...filters,
+        search: search.value,
+        page: page.value,
+        page_size: pageCount.value,
       },
-    }),
-  {
-    default: () => [],
-    watch: [page, search, searchStatus, pageCount, sort],
+    });
+
+    if (resp.status === 200) {
+      habitsData.value = { ...resp.data.habits };
+      pageTotal.value = resp.data.total;
+    }
+  } catch (e) {
+    console.info('error', e);
+  } finally {
+    isFetching.value = false;
+  }
+};
+
+watch(
+  () => [page.value, pageCount.value, filters],
+  () => {
+    console.log('changed', {
+      page: page.value,
+      pageCount: pageCount.value,
+      filters: filters,
+    });
+    fetchData();
   },
+  { deep: true },
 );
+
+watch(search, useDebounce(fetchData, 500));
 </script>
 
 <style scoped></style>

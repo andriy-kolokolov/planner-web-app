@@ -16,3 +16,13 @@ export interface Auth {
   token: string;
   user: User;
 }
+
+export interface Habit {
+  id: UUID;
+  name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  user_id: UUID;
+}
+
