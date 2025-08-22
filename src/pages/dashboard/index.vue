@@ -7,11 +7,11 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { useAuthStore } from '~/stores/useAuthStore';
-import type { User } from '~/types/models';
+import type { UserResource } from '~/types/resources';
 import CodeSnippet from '~/components/ui/CodeSnippet.vue';
 
 interface State {
-  userData: User | null;
+  userData: UserResource | null;
 }
 const state = reactive<State>({ userData: null });
 const loading = ref(false);
@@ -20,7 +20,7 @@ const getUserData = async () => {
   loading.value = true;
   try {
     const { $axios } = useNuxtApp();
-    const resp = await $axios.get<{ user: User }>('/api/v1/auth/user');
+    const resp = await $axios.get<{ user: UserResource }>('/api/v1/auth/user');
 
     console.log('resp', resp);
 

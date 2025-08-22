@@ -1,7 +1,7 @@
 // stores/auth.ts
 import { defineStore } from 'pinia';
 import type { AuthResponse } from '~/types/response';
-import type { Auth } from '~/types/models';
+import type { Auth } from '~/types/resources';
 import { AUTH_DATA_STORAGE } from '~/constants/localStorageKeys';
 
 export const useAuthStore = defineStore('auth', {

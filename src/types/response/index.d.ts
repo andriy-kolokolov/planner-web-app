@@ -1,12 +1,12 @@
-import type { User } from '~/types/models';
+import type { UserResource } from '~/types/resources';
 
 export interface AuthResponse {
-  user: User;
+  user: UserResource;
   token: string;
 }
 
 export interface RegisterResponse {
-  user: User;
+  user: UserResource;
   token: string;
 }
 

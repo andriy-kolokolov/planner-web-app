@@ -35,7 +35,24 @@ export default defineNuxtPlugin((_nuxtApp) => {
       return response;
     },
     (error) => {
-      // Handle response errors (e.g., authentication errors, network issues)
+      const respErr = error.response.data?.error;
+
+      if (respErr?.status === 401) {
+        useNuxtApp().$toast.error(respErr?.message || 'Authentication failed. Please log in again.');
+      }
+      else if (respErr?.status === 403) {
+        useNuxtApp().$toast.error(respErr?.message || 'You do not have permission to perform this action.');
+      }
+      else if (respErr?.status === 404) {
+        useNuxtApp().$toast.error(respErr?.message || 'Resource not found.');
+      }
+      else if (respErr?.status === 409) {
+        useNuxtApp().$toast.error(respErr?.message || 'Resource conflict.');
+      }
+      else if (respErr?.status.toString().startsWith('5')) {
+        useNuxtApp().$toast.error(respErr?.message || 'Server error. Please try again later.');
+      }
+
       return Promise.reject(error);
     },
   );

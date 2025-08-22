@@ -36,7 +36,6 @@
 import { loginForm, loginFormSchema } from '~/util/forms/loginForm';
 import type { AuthResponse } from '~/types/response';
 import FormField from '~/components/ui/form/FormField.vue';
-import { registerForm } from '~/util/forms/registerForm';
 
 const notFullFilledForm = computed(() => {
   return loginForm.email.length === 0 || loginForm.password.length === 0;
@@ -55,8 +54,7 @@ const onSubmit = async () => {
       }, 500);
     },
     onError: (error) => {
-      console.log(error);
-      useNuxtApp().$toast.error(JSON.stringify(error));
+      useNuxtApp().$toast.error(error?.message || 'Login failed!');
     },
   });
 };
