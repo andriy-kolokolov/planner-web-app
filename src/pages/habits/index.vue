@@ -9,10 +9,10 @@
     <template #extra-actions> extra actions </template>
 
     <!-- Global override for ALL cells -->
-<!--    <template #body-cell="{ value }">-->
-<!--      <UTooltip v-if="value?.toString().length > 30" :text="value"> {{ value?.toString().slice(0, 30) }}... </UTooltip>-->
-<!--      <template v-else>{{ value }}</template>-->
-<!--    </template>-->
+    <template #body-cell="{ value }">
+      <UTooltip v-if="value?.toString().length > 30" :text="value"> {{ value?.toString().slice(0, 30) }}... </UTooltip>
+      <template v-else>{{ value }}</template>
+    </template>
 
     <!-- Or per-column only -->
     <!--     <template #name-data="{ value }"><strong>{{ value }}</strong></template> -->
@@ -36,7 +36,7 @@ interface UISelectOption<T = unknown> {
 }
 
 const columns = [
-  { key: 'select', class: 'w-2' },
+  // { key: 'select', class: 'w-2' },
   { key: 'name', label: 'Name', sortable: true },
   { key: 'description', label: 'Description', sortable: true },
   { key: 'color_hex', label: 'Color', sortable: true },

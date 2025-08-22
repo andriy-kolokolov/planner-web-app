@@ -22,9 +22,9 @@
       <div class="flex gap-1.5 items-center">
         <slot name="extra-actions" />
 
-        <UDropdown v-if="selectedRows.length > 1" :items="bulkActions" :ui="{ width: 'w-36' }">
-          <UButton icon="i-heroicons-chevron-down" trailing color="gray" size="xs"> Mark as </UButton>
-        </UDropdown>
+        <!--        <UDropdown v-if="selectedRows.length > 1" :items="bulkActions" :ui="{ width: 'w-36' }"> -->
+        <!--          <UButton icon="i-heroicons-chevron-down" trailing color="gray" size="xs"> Mark as </UButton> -->
+        <!--        </UDropdown> -->
 
         <USelectMenu v-model="selectedColumns" :options="excludeSelectColumn" multiple>
           <UButton icon="i-heroicons-view-columns" color="gray" size="xs"> Columns </UButton>
@@ -36,7 +36,6 @@
 
     <!-- Table -->
     <UTable
-      v-model="selectedRows"
       v-model:sort="sort"
       :rows="props.data"
       :columns="columnsTable"
@@ -46,9 +45,8 @@
       sort-mode="manual"
       class="w-full"
       :ui="{ td: { base: 'align-top' } }"
-      @select="select"
     >
-      <template v-for="col in interceptedColumns" :key="'col-' + String(col.key)" v-slot:[`${String(col.key)}-data`]="slotCtx">
+      <template v-for="col in interceptedColumns" :key="'col-' + String(col.key)" #[`${String(col.key)}-data`]="slotCtx">
         <!-- 1) Use generic only if it *renders* content for this cell -->
         <template v-if="hasGenericBodyCell && hasBodyCellContent(slotCtx)">
           <slot name="body-cell" v-bind="normalizeCtx(slotCtx)" />
@@ -61,23 +59,7 @@
 
         <!-- 3) Else, defaults (unchanged) -->
         <template v-else>
-          <template v-if="String(col.key) === 'actions'">
-            <!-- your actions fallback -->
-          </template>
-          <template v-else>
-            <template v-if="toText(resolveCellValue(slotCtx)).length > props.ellipsisChars">
-              <UTooltip :text="toText(resolveCellValue(slotCtx))">
-                <span class="block w-full overflow-hidden whitespace-nowrap text-ellipsis" :title="toText(resolveCellValue(slotCtx))">
-                  {{ toText(resolveCellValue(slotCtx)).slice(0, props.ellipsisChars) }}…
-                </span>
-              </UTooltip>
-            </template>
-            <template v-else>
-              <span class="block w-full overflow-hidden whitespace-nowrap text-ellipsis" :title="toText(resolveCellValue(slotCtx))">
-                {{ toText(resolveCellValue(slotCtx)) }}
-              </span>
-            </template>
-          </template>
+          {{ toText(resolveCellValue(slotCtx)) }}
         </template>
       </template>
     </UTable>
@@ -123,6 +105,7 @@
 import { computed, reactive, ref, useSlots } from 'vue';
 import type { TableColumn } from '~/types/ui/table';
 import type { DropdownGroups } from '~/types/ui/dropdown';
+import type { TableRow } from '#ui/types';
 
 interface Props {
   columns: TableColumn<TResource>[];
@@ -178,13 +161,11 @@ function hasBodyCellContent<T>(ctx: UTableDataSlotCtx<T>) {
   return Array.isArray(nodes) ? nodes.length > 0 : Boolean(nodes);
 }
 
-const SPECIAL_KEYS = new Set(['select'])
+const SPECIAL_KEYS = new Set(['select']);
 const interceptedColumns = computed(() => {
-  const all = hasGenericBodyCell.value
-              ? columnsTable.value
-              : columnsTable.value.filter(c => hasParentSlot(`${String(c.key)}-data`))
-  return all.filter(c => !SPECIAL_KEYS.has(String(c.key)))
-})
+  const all = hasGenericBodyCell.value ? columnsTable.value : columnsTable.value.filter((c) => hasParentSlot(`${String(c.key)}-data`));
+  return all.filter((c) => !SPECIAL_KEYS.has(String(c.key)));
+});
 
 const needsActionsFallback = computed(() => !hasGenericBodyCell.value && !hasParentSlot('actions-data'));
 
@@ -193,7 +174,7 @@ const page = defineModel<number>('page', { default: 1 });
 const pageCount = defineModel<number>('pageCount', { default: 10 });
 const pageCountOptions = defineModel<number[]>('pageCountOptions', { default: () => [3, 5, 10, 20, 30, 40] });
 const pageTotal = defineModel<number>('pageTotal', { default: 200 });
-const selectedRows = defineModel<TResource[]>('selectedRows', { default: () => [] });
+// const selectedRows = defineModel<TResource[]>('selectedRows', { default: () => [] });
 
 /** Pagination & sorting */
 const sort = ref<TableSort>({ column: 'id', direction: 'asc' });
@@ -241,16 +222,6 @@ function toText(v: unknown): string {
   } catch {
     return String(v);
   }
-}
-
-function needsEllipsis(s: string): boolean {
-  return s.length > props.ellipsisChars;
-}
-
-function select(row: TResource) {
-  const idx = selectedRows.value.findIndex((r) => (r as any).id === (row as any).id);
-  if (idx === -1) selectedRows.value.push(row);
-  else selectedRows.value.splice(idx, 1);
 }
 
 function emitReset() {
